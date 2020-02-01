@@ -13,6 +13,24 @@ export class LoginComponent implements OnInit {
     returnUrl: string;
     error = '';
 
+    // http options used for making API calls
+    private httpOptions: any;
+  
+    // the actual JWT token
+    public token: string;
+  
+    // the token expiration date
+    public token_expires: Date;
+  
+    // the username of the logged in user
+    public username: string;
+  
+    // error messages received from the login attempt
+    public errors: any = [];
+
+    // private currentUserSubject: BehaviorSubject<User>;
+    // public currentUser: Observable<User>;
+
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
@@ -47,15 +65,33 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.authenticationService.login(this.f.username.value, this.f.password.value)
+        this.authenticationService.login({'username': this.f.username.value, 'password': this.f.password.value})
             .pipe(first())
             .subscribe(
                 data => {
+                    console.log("Login success");
+                    console.log(data);
+                    // this.updateData(data['token']);
                     this.router.navigate([this.returnUrl]);
+                    this.loading = false;
                 },
                 error => {
+                    if(error == 'Bad Request'){
+                        error = "Invalid Username/Password";
+                    }
                     this.error = error;
                     this.loading = false;
                 });
     }
+    
+    private updateData(token) {
+        this.token = token;
+        this.errors = [];
+    
+        // decode the token to read the username and expiration timestamp
+        const token_parts = this.token.split(/\./);
+        const token_decoded = JSON.parse(window.atob(token_parts[1]));
+        this.token_expires = new Date(token_decoded.exp * 1000);
+        this.username = token_decoded.username;
+      }
 }
