@@ -6,7 +6,7 @@ To set up the Angular project, follow these steps:
 - `npm audit fix --force` (In case you find any error in the previous installation)
 - `npm install --save rxjs-compat`
 - `git add --all`
-- `git commit -m "Cache Changes"`
+- `git commit -m "Cache Changes"` (This git commit is used to clear stash to update Angular in case it is out of date)
 - `ng update @angular/cli @angular/core`
 - `ng serve --open` (You need to have Angular installed for this command)
 
